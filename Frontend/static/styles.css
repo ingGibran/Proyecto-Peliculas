@@ -1,7 +1,7 @@
 :root {
   color: #123b2b;
   background: #edf8f1;
-  font-family: Arial, sans-serif;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
   --santos-green: #006847;
   --santos-dark: #004d36;
   --santos-light: #e5f3ea;
@@ -31,7 +31,7 @@ button { cursor: pointer; }
 .search-link, .account-button, .close-button { background: none; border: 0; color: white; }
 .account-button { font-weight: 700; }
 
-.catalog-section { background: white; border-left: 5px solid var(--santos-green); margin: 2rem auto; max-width: 1100px; padding: 4rem 1rem; }
+.catalog-section { background: white; border-left: 5px solid var(--santos-green); box-shadow: 0 8px 24px rgba(0, 77, 54, .08); margin: 2rem auto; max-width: 1100px; padding: 4rem 1rem; }
 .account-panel { align-items: center; background: rgba(0, 0, 0, .45); display: flex; inset: 0; justify-content: center; padding: 1rem; position: fixed; z-index: 10; }
 .account-panel[hidden] { display: none; }
 .account-dialog { background: white; border-top: 5px solid var(--santos-green); box-shadow: 0 1rem 3rem rgba(0, 77, 54, .25); max-height: 90vh; max-width: 460px; overflow-y: auto; padding: 2rem; width: 100%; }
@@ -67,9 +67,9 @@ button { cursor: pointer; }
 .movie-dialog input[type="range"] { accent-color: var(--santos-green); width: 100%; }
 .movie-dialog [data-purchase-summary] { color: #555; }
 .poster { cursor: pointer; }
-.section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 2rem; }
+.section-heading { align-items: end; border-bottom: 1px solid #d7eadc; display: flex; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; }
 .eyebrow { color: var(--santos-green); font-size: .75rem; margin: 0 0 .5rem; text-transform: uppercase; }
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin: 0; }
+h1 { color: var(--santos-dark); font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.04em; margin: 0; }
 .movie-count, .status-message, .site-footer { color: #666; font-size: .85rem; }
 
 .filter-bar { display: flex; gap: .75rem; margin-bottom: 1.5rem; }
@@ -85,18 +85,19 @@ h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin: 0; }
 .status-message { min-height: 1rem; }
 .status-message.error { color: #b42318; }
 
-.movie-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(4, 1fr); min-height: 100px; }
-.movie-card { min-width: 0; }
+.movie-grid { display: grid; gap: 1.75rem; grid-template-columns: repeat(4, 1fr); min-height: 100px; }
+.movie-card { background: #fff; border: 1px solid #d9eade; border-radius: .5rem; min-width: 0; overflow: hidden; transition: box-shadow .2s ease, transform .2s ease; }
+.movie-card:hover { box-shadow: 0 10px 24px rgba(0, 77, 54, .2); transform: translateY(-4px); }
 .poster { align-items: end; aspect-ratio: 2 / 2.8; background: var(--santos-green); color: white; display: flex; overflow: hidden; padding: 1rem; }
 .poster-image { height: 100%; inset: 0; object-fit: cover; position: absolute; width: 100%; }
 .poster { position: relative; }
 .poster::after { background: linear-gradient(transparent 45%, rgba(0, 0, 0, .7)); content: ""; inset: 0; position: absolute; }
 .poster-title { font-size: 1.1rem; font-weight: 700; }
 .poster-title { position: relative; z-index: 1; }
-.movie-info { padding-top: .6rem; }
+.movie-info { min-height: 4.25rem; padding: .8rem .85rem; }
 .movie-title { font-size: .9rem; margin: 0 0 .3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .movie-meta { color: #666; font-size: .75rem; }
-.rating { color: var(--santos-gold); float: right; font-size: .75rem; }
+.rating { background: var(--santos-light); border-radius: 999px; color: var(--santos-dark); float: right; font-size: .75rem; font-weight: 700; padding: .2rem .4rem; }
 .button { border: 1px solid #ccc; display: block; padding: .75rem 1rem; }
 .button-outline { background: white; border-color: var(--santos-green); color: var(--santos-green); margin: 2rem auto 0; }
 .site-footer { background: var(--santos-dark); border-top: 4px solid var(--santos-gold); color: white; max-width: none; }
