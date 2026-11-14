@@ -1,5 +1,5 @@
 from . import models
-from .models import Movie, Purchase, Rent, User
+from .models import Favorite, Movie, Purchase, Rent, User
 from .settings import (
     Settings,
     create_db_and_tables,
@@ -12,6 +12,7 @@ from .settings import (
 __all__ = [
     "models",
     "Movie",
+    "Favorite",
     "Purchase",
     "Rent",
     "User",

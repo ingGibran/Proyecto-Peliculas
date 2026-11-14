@@ -4,7 +4,7 @@ window.Catalog = {
   components: { MovieCard: window.MovieCard },
   emits: ["select-movie"],
   data: () => ({
-    movies: [], skip: 0, loading: false, hasMore: true, error: "", query: "", genre: "", sort: "rating",
+    movies: [], favorites: [], skip: 0, loading: false, hasMore: true, error: "", query: "", genre: "", sort: "rating",
     minRating: 0, releaseYear: "", showExtraFilters: false,
   }),
   computed: {
@@ -34,12 +34,35 @@ window.Catalog = {
         console.error(error);
       } finally { this.loading = false; }
     },
+    async loadFavorites() {
+      if (!localStorage.getItem(TOKEN_KEY)) return;
+      try {
+        const saved = await request(`${API_BASE_URL}/favorites/me`, { headers: authHeaders() });
+        this.favorites = saved.map((favorite) => favorite.movie_id);
+      } catch (error) { console.error(error); }
+    },
+    async toggleFavorite(movie) {
+      if (!localStorage.getItem(TOKEN_KEY)) {
+        this.error = "Inicia sesión para guardar favoritos.";
+        return;
+      }
+      const saved = this.favorites.includes(movie.id);
+      try {
+        await request(`${API_BASE_URL}/favorites/${movie.id}`, {
+          method: saved ? "DELETE" : "POST",
+          headers: authHeaders(),
+        });
+        this.favorites = saved
+          ? this.favorites.filter((id) => id !== movie.id)
+          : this.favorites.concat(movie.id);
+      } catch (error) { this.error = error.message; }
+    },
     debounceLoad() {
       clearTimeout(this.searchTimer);
       this.searchTimer = setTimeout(() => this.load(true), 350);
     },
   },
-  mounted() { this.load(true); },
+  mounted() { this.load(true); this.loadFavorites(); },
   template: `
     <section class="catalog-section" id="discover" aria-labelledby="discover-title">
       <div class="section-heading"><div><p class="eyebrow">Catálogo</p><h1 id="discover-title">Encuentra una película</h1></div>
@@ -60,7 +83,7 @@ window.Catalog = {
         <label class="year-field">Año <input v-model="releaseYear" type="number" min="1888" max="2100" placeholder="e.g. 1999" @change="load(true)"></label>
       </div>
       <p class="status-message" :class="{ error }" role="status">{{ error || (loading && !movies.length ? "Cargando películas..." : "") }}</p>
-      <div class="movie-grid" aria-live="polite"><MovieCard v-for="movie in movies" :key="movie.id" :movie="movie" @select="$emit('select-movie', $event)" /></div>
+      <div class="movie-grid" aria-live="polite"><MovieCard v-for="movie in movies" :key="movie.id" :movie="movie" :is-favorite="favorites.includes(movie.id)" @select="$emit('select-movie', $event)" @toggle-favorite="toggleFavorite" /></div>
       <button v-if="hasMore && movies.length" class="button button-outline load-more" type="button" @click="load()">Cargar más</button>
     </section>
   `,

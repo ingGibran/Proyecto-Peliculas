@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 
 class Movie(SQLModel, table=True):
@@ -23,6 +23,7 @@ class Movie(SQLModel, table=True):
 
     rents: list["Rent"] = Relationship(back_populates="movie")
     purchases: list["Purchase"] = Relationship(back_populates="movie")
+    favorites: list["Favorite"] = Relationship(back_populates="movie")
 
 
 class User(SQLModel, table=True):
@@ -39,6 +40,22 @@ class User(SQLModel, table=True):
 
     rents: list["Rent"] = Relationship(back_populates="user")
     purchases: list["Purchase"] = Relationship(back_populates="user")
+    favorites: list["Favorite"] = Relationship(back_populates="user")
+
+
+class Favorite(SQLModel, table=True):
+    """A movie saved by a user for a later rental or purchase."""
+
+    __tablename__ = "favorites"
+    __table_args__ = (UniqueConstraint("user_id", "movie_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id", index=True)
+    movie_id: int = Field(foreign_key="movies.id", index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    user: User = Relationship(back_populates="favorites")
+    movie: Movie = Relationship(back_populates="favorites")
 
 
 class Rent(SQLModel, table=True):

@@ -10,6 +10,7 @@ import uvicorn
 
 from backend.database import create_db_and_tables
 from backend.routers.movies import router as movies_router
+from backend.routers.favorites import router as favorites_router
 from backend.routers.purchase import router as purchase_router
 from backend.routers.rent import router as rent_router
 from backend.routers.users import router as users_router
@@ -46,6 +47,7 @@ app.add_middleware(
 )
 app.include_router(users_router)
 app.include_router(movies_router)
+app.include_router(favorites_router)
 app.include_router(rent_router)
 app.include_router(purchase_router)
 app.mount(

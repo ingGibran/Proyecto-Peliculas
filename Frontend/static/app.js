@@ -12,7 +12,7 @@ createApp({
     <Header @search="focusSearch" @account="accountOpen = true" />
     <main>
       <Catalog @select-movie="selectedMovie = $event" />
-      <AccountModal :open="accountOpen" @close="accountOpen = false" />
+      <AccountModal :open="accountOpen" @close="accountOpen = false" @select-movie="selectedMovie = $event; accountOpen = false" />
       <MovieModal :movie="selectedMovie" @close="selectedMovie = null" />
     </main>
     <footer class="site-footer"><span><strong>SANTOS TV</strong> · Santos Laguna</span><span>Alejandro Gibrán & Victor Hugo</span></footer>

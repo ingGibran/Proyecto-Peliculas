@@ -1,7 +1,7 @@
 window.AccountModal = {
   props: { open: Boolean },
-  emits: ["close"],
-  data: () => ({ tab: "login", user: null, status: "", error: "", rents: [], purchases: [] }),
+  emits: ["close", "select-movie"],
+  data: () => ({ tab: "login", user: null, status: "", error: "", favorites: [], rents: [], purchases: [] }),
   computed: { loggedIn() { return Boolean(this.user); } },
   methods: {
     async submit(path, payload, options = {}) {
@@ -31,11 +31,19 @@ window.AccountModal = {
     },
     async loadContent() {
       try {
-        [this.rents, this.purchases] = await Promise.all([
+        [this.favorites, this.rents, this.purchases] = await Promise.all([
+          request(`${API_BASE_URL}/favorites/me`, { headers: authHeaders() }),
           request(`${API_BASE_URL}/rents/me`, { headers: authHeaders() }),
           request(`${API_BASE_URL}/purchases/me`, { headers: authHeaders() }),
         ]);
       } catch (error) { this.status = error.message; this.error = true; }
+    },
+    openFavorite(favorite) {
+      this.$emit("select-movie", {
+        id: favorite.movie_id,
+        title: favorite.movie_title,
+        poster_url: favorite.poster_url,
+      });
     },
     async updateProfile(event) {
       const payload = Object.fromEntries(new FormData(event.target));
@@ -64,7 +72,7 @@ window.AccountModal = {
         <form v-if="tab === 'register'" class="account-form" @submit.prevent="register"><h3>Crear cuenta</h3><input name="full_name" placeholder="Nombre completo" required><input name="email" type="email" placeholder="Correo electrónico" required><input name="password" type="password" minlength="8" placeholder="Contraseña (mínimo 8 caracteres)" required><button class="button button-primary">Registrarme</button></form>
         <form v-if="tab === 'login'" class="account-form" @submit.prevent="login"><h3>Iniciar sesión</h3><input name="email" type="email" placeholder="Correo electrónico" required><input name="password" type="password" placeholder="Contraseña" required><button class="button button-primary">Entrar</button></form>
         <form v-if="tab === 'profile' && user" class="account-form profile-form" @submit.prevent="updateProfile"><h3>Editar perfil</h3><input name="full_name" :value="user.full_name" required><input name="email" type="email" :value="user.email" required><input name="password" type="password" minlength="8" placeholder="Nueva contraseña (opcional)"><div class="profile-actions"><button class="button button-primary">Guardar cambios</button><button class="button" type="button" @click="logout">Cerrar sesión</button></div></form>
-        <div v-if="tab === 'content'" class="content-panel"><h3>Películas rentadas</h3><div class="content-list"><p v-if="!rents.length" class="empty-content">No tienes películas rentadas.</p><div v-for="rent in rents" :key="rent.id" class="content-item"><img v-if="rent.poster_url" :src="rent.poster_url" :alt="'Portada de ' + rent.movie_title"><div><strong>{{ rent.movie_title }}</strong><span>Renta hasta {{ formatDate(rent.due_at) }} · \${{ rent.price }} MXN</span></div></div></div><h3>Películas compradas</h3><div class="content-list"><p v-if="!purchases.length" class="empty-content">No tienes películas compradas.</p><div v-for="purchase in purchases" :key="purchase.id" class="content-item"><img v-if="purchase.poster_url" :src="purchase.poster_url" :alt="'Portada de ' + purchase.movie_title"><div><strong>{{ purchase.movie_title }}</strong><span>Comprada el {{ formatDate(purchase.bought_at) }} · \${{ purchase.price }} MXN</span></div></div></div></div>
+        <div v-if="tab === 'content'" class="content-panel"><h3>Favoritos</h3><div class="content-list"><p v-if="!favorites.length" class="empty-content">No tienes películas favoritas.</p><div v-for="favorite in favorites" :key="favorite.id" class="content-item"><img v-if="favorite.poster_url" :src="favorite.poster_url" :alt="'Portada de ' + favorite.movie_title"><div><strong>{{ favorite.movie_title }}</strong><span>Guardada para después</span><button class="button button-small" type="button" @click="openFavorite(favorite)">Rentar o comprar</button></div></div></div><h3>Películas rentadas</h3><div class="content-list"><p v-if="!rents.length" class="empty-content">No tienes películas rentadas.</p><div v-for="rent in rents" :key="rent.id" class="content-item"><img v-if="rent.poster_url" :src="rent.poster_url" :alt="'Portada de ' + rent.movie_title"><div><strong>{{ rent.movie_title }}</strong><span>Renta hasta {{ formatDate(rent.due_at) }} · \${{ rent.price }} MXN</span></div></div></div><h3>Películas compradas</h3><div class="content-list"><p v-if="!purchases.length" class="empty-content">No tienes películas compradas.</p><div v-for="purchase in purchases" :key="purchase.id" class="content-item"><img v-if="purchase.poster_url" :src="purchase.poster_url" :alt="'Portada de ' + purchase.movie_title"><div><strong>{{ purchase.movie_title }}</strong><span>Comprada el {{ formatDate(purchase.bought_at) }} · \${{ purchase.price }} MXN</span></div></div></div></div>
         <p class="account-status status-message" :class="{ error }" role="status">{{ status }}</p>
       </div>
     </section>

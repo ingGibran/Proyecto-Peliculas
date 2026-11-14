@@ -1,6 +1,6 @@
 window.MovieCard = {
-  props: { movie: { type: Object, required: true } },
-  emits: ["select"],
+  props: { movie: { type: Object, required: true }, isFavorite: Boolean },
+  emits: ["select", "toggle-favorite"],
   computed: {
     posterStyle() {
       const colors = ["#003b2a, #00845a", "#00533a, #38a169", "#0b5d46, #78b894", "#004d36, #1d8b63"];
@@ -16,6 +16,11 @@ window.MovieCard = {
         <img v-if="movie.poster_url" class="poster-image" :src="movie.poster_url"
           :alt="'Portada de ' + movie.title" loading="lazy">
         <span class="poster-title">{{ movie.title }}</span>
+        <button class="favorite-button" :class="{ active: isFavorite }" type="button"
+          :aria-label="isFavorite ? 'Quitar de favoritos' : 'Guardar en favoritos'"
+          @click.stop="$emit('toggle-favorite', movie)">
+          {{ isFavorite ? "★" : "☆" }}
+        </button>
       </div>
       <div class="movie-info">
         <h3 class="movie-title" :title="movie.title">{{ movie.title }}</h3>
