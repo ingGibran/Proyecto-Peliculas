@@ -1,4 +1,5 @@
 from pwdlib import PasswordHash
+from pwdlib.exceptions import PwdlibError
 
 
 password_hash = PasswordHash.recommended()
@@ -15,7 +16,10 @@ def verify_password(password: str, hashed_password: str) -> bool:
     """Safely compare a plaintext password with a stored hash."""
     if not password or not hashed_password:
         return False
-    return password_hash.verify(password, hashed_password)
+    try:
+        return password_hash.verify(password, hashed_password)
+    except PwdlibError:
+        return False
 
 
 def needs_password_rehash(hashed_password: str) -> bool:
